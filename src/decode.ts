@@ -55,36 +55,21 @@ export function decodeSlab(base64: string): DecodedSlab {
 
     // Step 6: Parse assets
     const assetIds = new Set<string>();
-    // const assetData: Record<string, AssetData[]> = {}
-    const assetData: AssetData[] = [];
+    const assets: Record<string, AssetData[]> = {}
     for (const layout of layouts) {
-      console.log("LAYOUT")
+      assets[layout.assetKindId] = [];
       for (let i = 0; i < layout.assetCount; i++) {
-        const assetOffset = offset + i * 8;
-        // const assetBuffer = decompressed.subarray(assetOffset, assetOffset + 8);
         const encodedAsset = decompressed.readBigInt64BE(offset);
         const decodedAsset = decodeAsset(encodedAsset);
-        assetData.push(decodedAsset);
-        
-        /*
-        const decodedAsset = decodeAsset(assetBuffer.readBigInt64BE());
-        console.log(decodedAsset);
+        assets[layout.assetKindId].push(decodedAsset);
 
-        // Add the AssetKindId to the set
-        assetIds.add(layout.assetKindId);
-        */
-
-        //if (!assetData[layout.assetKindId]) assetData[layout.assetKindId] = [];
-        //assetData[layout.assetKindId].push(decodedAsset);
-        // assetData.push(decodedAsset);
         offset += 8;
       }
-      // offset += layout.assetCount * 8; // Move to the next set of assets
     }
 
     return {
       layouts,
-      assetData,
+      assets,
       creatureCount: 0
     };
   } catch (err) {

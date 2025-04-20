@@ -28,8 +28,10 @@ export interface AssetData {
   rotation: number; // Rotation in steps (0-23, multiplied by 15 for degrees)
 }
 
+export type Assets = Record<string, AssetData[]>;
+
 export interface DecodedSlab {
   layouts: Layout[];
-  assetData: AssetData[];
+  assets: Assets;
   creatureCount: number; // always 0
 }

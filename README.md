@@ -6,4 +6,8 @@ The current plan is to generate TaleSpire maps from Watabou Procgen Arcana's [Du
 
 ### Resources
 
-[official documentation for encoding format](https://github.com/Bouncyrock/DumbSlabStats/blob/master/format.md)
+[official BouncyRock documentation of encoding format](https://github.com/Bouncyrock/DumbSlabStats/blob/master/format.md)
+
+[Procgen Arcana - One Page Dungeon Generator](https://watabou.github.io/dungeon.html)
+
+[inspiration](https://github.com/Selyam12/Creadth.Talespire.DungeonGenerator/tree/master)
