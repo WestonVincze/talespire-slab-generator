@@ -1,18 +1,19 @@
-import { BITS_PER_COMPONENT, ROT_MASK, ROTATION_BITS_OFFSET, Y_BITS_OFFSET, Z_BITS_OFFSET } from './constants';
+import { BITS_PER_COMPONENT, ENCODED_POSITION_MAX_VALUE, ROT_MASK, ROTATION_BITS_OFFSET, UNUSED_BITS_OFFSET, Y_BITS_OFFSET, Z_BITS_OFFSET } from './constants';
+import { decodeUUID } from './helpers';
 import { AssetData, DecodedSlab } from './types';
 import { gunzipSync } from 'zlib';
 
 export function decodeAsset(encoded: bigint): AssetData {
-  const scaledX = Number(encoded & BigInt((1 << BITS_PER_COMPONENT) - 1));
-  const scaledY = Number((encoded >> BigInt(Y_BITS_OFFSET)) & BigInt((1 << BITS_PER_COMPONENT) - 1));
-  const scaledZ = Number((encoded >> BigInt(Z_BITS_OFFSET)) & BigInt((1 << BITS_PER_COMPONENT) - 1));
-  const rotation = Number((encoded >> BigInt(ROTATION_BITS_OFFSET)) & BigInt(ROT_MASK));
+  const x = Number(encoded & BigInt((1 << BITS_PER_COMPONENT) - 1));
+  const y = Number((encoded >> BigInt(Y_BITS_OFFSET)) & BigInt((1 << BITS_PER_COMPONENT) - 1));
+  const z = Number((encoded >> BigInt(Z_BITS_OFFSET)) & BigInt((1 << BITS_PER_COMPONENT) - 1));
+  const rot = Number((encoded >> BigInt(ROTATION_BITS_OFFSET)));
 
   return {
-    scaledX: scaledX / 100,
-    scaledY: scaledY / 100,
-    scaledZ: scaledZ / 100,
-    rotation,
+    scaledX: x,// / 100,
+    scaledY: y,// / 100,
+    scaledZ: z,// / 100,
+    rotation: rot * (360 / 24),
   };
 }
 
@@ -24,30 +25,35 @@ export function decodeSlab(base64: string): DecodedSlab {
       trimmed = trimmed.slice(3, -3);
     }
     const buffer = Buffer.from(trimmed, 'base64');
+    let offset = 0;
 
     // Step 2: Decompress the data
     const decompressed = gunzipSync(buffer);
 
     // Step 3: Read and validate the header
-    const header = decompressed.readUInt32LE(0);
+    const header = decompressed.readUInt32LE(offset);
+    offset += 4;
     if (header !== 0xD1CEFACE) {
       throw new Error('Invalid slab header: Expected 0xD1CEFACE');
     }
 
-    const version = decompressed.readUInt16LE(4);
+    const version = decompressed.readUInt16LE(offset);
+    offset += 2;
     if (version !== 2) {
       throw new Error(`Unsupported slab version: ${version}`);
     }
 
     // Step 4: Read counts
-    const layoutCount = decompressed.readUInt16LE(6);
-    const creatureCount = decompressed.readUInt16LE(8); // Always 0 in version 2
+    const layoutCount = decompressed.readUInt16LE(offset);
+    offset += 2;
+    const creatureCount = decompressed.readUInt16LE(offset); // Always 0 in version 2
+    offset += 2;
 
     // Step 5: Parse layouts
     const layouts: { assetKindId: string; assetCount: number }[] = [];
-    let offset = 10; // Start after header and counts
     for (let i = 0; i < layoutCount; i++) {
-      const assetKindId = decompressed.subarray(offset, offset + 16).toString('hex');
+      const assetKindIdBuffer = decompressed.subarray(offset, offset + 16);
+      const assetKindId = decodeUUID(assetKindIdBuffer);
       const assetCount = decompressed.readUInt16LE(offset + 16);
       layouts.push({ assetKindId, assetCount });
       offset += 20; // Each layout is 20 bytes
@@ -59,7 +65,7 @@ export function decodeSlab(base64: string): DecodedSlab {
     for (const layout of layouts) {
       assets[layout.assetKindId] = [];
       for (let i = 0; i < layout.assetCount; i++) {
-        const encodedAsset = decompressed.readBigInt64BE(offset);
+        const encodedAsset = decompressed.readBigUInt64LE(offset);
         const decodedAsset = decodeAsset(encodedAsset);
         assets[layout.assetKindId].push(decodedAsset);
 
