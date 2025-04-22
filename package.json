@@ -2,9 +2,10 @@
   "name": "dungeon-to-slab",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "test": "npx jest",
     "encode": "tsx src/scripts/encode-cli.ts",
     "decode": "tsx src/scripts/decode-cli.ts",
-    "test": "npx jest"
+    "convert": "tsx src/scripts/convert-dungeon.ts"
   },
   "dependencies": {
     "zlib": "^1.0.5"

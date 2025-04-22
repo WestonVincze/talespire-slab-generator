@@ -1,33 +1,54 @@
-import { DungeonData, AssetData } from './types';
+import { assets } from './data/assets/defaults';
+import { DungeonData, DecodedSlab } from './types';
+
+/** * * * * * * * *
+ *  To Consider   *
+ *  * * * * * * * *
+ * We could convert dungeon data into a grid cell first, then parse into slab
+ * * doing this would create a more extensible solution and make it easier to support alternate data formats
+ * * each tile has data (position, child assets with offsets)
+ * * grid[y][x] = { ... }
+ */
 
 /**
- * Converts DungeonData into an array of AssetData for the floor plan.
- * @param dungeonData The DungeonData to convert.
- * @returns An array of AssetData objects.
+ * Converts DungeonData into an slab string
+ * @param dungeonData The DungeonData to convert
+ * @returns base64 encoded slab string
  */
-export function convertDungeonDataToAssets(dungeonData: DungeonData): AssetData[] {
-  const assets: AssetData[] = [];
-  const assetId = '840790d51095f74cb017f369448d0d52'; // Single asset ID for the floor plan
+export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSlab {
+  const slab: DecodedSlab = {
+    layouts: [],
+    assets: {},
+    creatureCount: 0
+  }
 
-  // Iterate over each rectangle in the floor plan
+  // initialize floor
+  let floor_count = 0;
+  slab.assets[assets.floor.id] = [];
+
   for (const rect of dungeonData.rects) {
     for (let dx = 0; dx < rect.w; dx++) {
       for (let dy = 0; dy < rect.h; dy++) {
-        // Calculate the scaled positions
+        floor_count++;
         const scaledX = (rect.x + dx) * 100;
         const scaledY = (rect.y + dy) * 100;
-        const scaledZ = 0; // Floor plan is always at Z = 0
+        const scaledZ = 0;
 
         // Add the asset to the array
-        assets.push({
+        slab.assets[assets.floor.id].push({
           scaledX,
           scaledY,
           scaledZ,
-          rotation: 0, // Default rotation
+          rotation: 0,
         });
       }
     }
   }
 
-  return assets;
+  slab.layouts.push({
+    assetKindId: assets.floor.id,
+    assetCount: floor_count
+  })
+
+  return slab;
 }
