@@ -22,34 +22,30 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
     creatureCount: 0
   }
 
-  // initialize floor
+  // initialize assets
   let floor_count = 0;
-  let wall_count = 0;
+  let wall_2x1_count = 0;
   let wall_corner_2x2_count = 0;
   let stairs_count = 0;
   slab.assets[assets.floor.id] = [];
-  slab.assets[assets.wall.id] = [];
+  slab.assets[assets.wall_2x1.id] = [];
   slab.assets[assets.wall_corner_2x2.id] = [];
   slab.assets[assets.stairs.id] = [];
 
-  //dungeonData.rects = dungeonData.rects.map(r => ({ ...r, y: r.y * -1}));
+  // reverse y values (positive y is "up" in TaleSpire, but "down" with generator)
+  const rects = dungeonData.rects.map(r => ({ ...r, y: r.y * -1 }));
 
-
-  // issue: 0,0 should be the bottom left but it's the top left
-
-  // for each position we need to mirror the y value
   // slabs cannot contain negative values, so we can find the lowest x and y values and offset all data to shift to positive values
-  const xOffset = Math.abs(dungeonData.rects.reduce((prev, curr) => curr.x < prev ? curr.x : prev, 0));
+  const xOffset = Math.abs(rects.reduce((prev, curr) => curr.x < prev ? curr.x : prev, 0));
   // dungeonData is 2d, therefore it's "y" values are actually "z" and all y values are 0
-  const zOffset = Math.abs(dungeonData.rects.reduce((prev, curr) => curr.y - curr.h < prev ? curr.y - curr.h : prev, 0));
-  console.log(zOffset)
+  const zOffset = Math.abs(rects.reduce((prev, curr) => curr.y < 0 && curr.y - curr.h < prev ? curr.y - curr.h : prev, 0));
 
-  for (const rect of dungeonData.rects) {
+  for (const rect of rects) {
     for (let dx = 0; dx < rect.w; dx++) {
       for (let dy = 0; dy < rect.h; dy++) {
-
-        const scaledX = (rect.x + dx + xOffset) * 200;
-        const scaledZ = (rect.y + dy + zOffset) * 200;
+        // for each position, we add the x and z offsets to ensure non-zero values
+        const scaledX = (rect.x + xOffset + dx) * 200;
+        const scaledZ = (rect.y + zOffset - dy) * 200;
         const scaledY = 0;
 
         // add floor tile
@@ -65,7 +61,7 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
         if (rect.x === 0 && rect.y === 0) {
           // entrance
           slab.assets[assets.stairs.id].push({
-            scaledX: scaledX + 50,
+            scaledX: scaledX + 50, // note: stairs can be placed off grid and "centered" if desired
             scaledY: 25,
             scaledZ,
             rotation: 180,
@@ -81,24 +77,6 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
         } else if (rect.w === 1 && rect.h === 1) {
 
         } else if (dx === 0 && dy === 0) {
-          // bottom left tile 
-          slab.assets[assets.wall_corner_2x2.id].push({
-            scaledX,
-            scaledY: 25,
-            scaledZ,
-            rotation: 0,
-          });
-          wall_corner_2x2_count++;
-        } else if (dx === rect.w - 1 && dy === 0) {
-          // bottom right tile
-          slab.assets[assets.wall_corner_2x2.id].push({
-            scaledX,
-            scaledY: 25,
-            scaledZ,
-            rotation: 270,
-          });
-          wall_corner_2x2_count++;
-        } else if (dx === 0 && dy === rect.h - 1) {
           // top left tile 
           slab.assets[assets.wall_corner_2x2.id].push({
             scaledX,
@@ -107,8 +85,8 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
             rotation: 90,
           });
           wall_corner_2x2_count++;
-        } else if (dx === rect.w - 1 && dy === rect.h - 1) {
-          // top right tile 
+        } else if (dx === rect.w - 1 && dy === 0) {
+          // top right tile
           slab.assets[assets.wall_corner_2x2.id].push({
             scaledX,
             scaledY: 25,
@@ -116,23 +94,60 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
             rotation: 180,
           });
           wall_corner_2x2_count++;
-        } else {
-          /*
-          slab.assets[assets.wall.id].push({
-            scaledX: scaledX + 100,
-            scaledY,
+        } else if (dx === 0 && dy === rect.h - 1) {
+          // bottom left tile 
+          slab.assets[assets.wall_corner_2x2.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ,
+            rotation: 0,
+          });
+          wall_corner_2x2_count++;
+        } else if (dx === rect.w - 1 && dy === rect.h - 1) {
+          // bottom right tile 
+          slab.assets[assets.wall_corner_2x2.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ,
+            rotation: 270,
+          });
+          wall_corner_2x2_count++;
+        } else if (dy === 0) {
+          // top tile
+          slab.assets[assets.wall_2x1.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ: scaledZ + 150,
+            rotation: 0
+          })
+          wall_2x1_count++;
+        } else if (dy === rect.h - 1) {
+          // bottom tile
+          slab.assets[assets.wall_2x1.id].push({
+            scaledX,
+            scaledY: 25,
             scaledZ,
             rotation: 0
           })
-
-          slab.assets[assets.wall.id].push({
-            scaledX: scaledX + 100,
-            scaledY,
-            scaledZ: scaledZ + 100,
-            rotation: 0
+          wall_2x1_count++;
+        } else if (dx === 0) {
+          // left tile
+          slab.assets[assets.wall_2x1.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ,
+            rotation: 90 
           })
-          wall_count += 2;
-          */
+          wall_2x1_count++;
+        } else if (dx === rect.w - 1) {
+          // right tile
+          slab.assets[assets.wall_2x1.id].push({
+            scaledX: scaledX + 150,
+            scaledY: 25,
+            scaledZ,
+            rotation: 90
+          })
+          wall_2x1_count++;
         }
       }
     }
@@ -144,8 +159,8 @@ export function convertDungeonDataToAssets(dungeonData: DungeonData): DecodedSla
   })
 
   slab.layouts.push({
-    assetKindId: assets.wall.id,
-    assetCount: wall_count 
+    assetKindId: assets.wall_2x1.id,
+    assetCount: wall_2x1_count 
   })
 
   slab.layouts.push({

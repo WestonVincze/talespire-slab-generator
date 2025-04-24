@@ -1,0 +1,106 @@
+{
+  "version": "1.2.5",
+  "title": "Scarletspear House",
+  "story": "For many years the house remained sealed. Now it is controlled by a party of orcs. Rumors say that Morvas, a legendary relic, is hidden here.",
+  "rects": [
+    {
+      "x": -7,
+      "y": -2,
+      "w": 7,
+      "h": 5
+    },
+    {
+      "x": -8,
+      "y": 4,
+      "w": 5,
+      "h": 4
+    },
+    {
+      "x": -8,
+      "y": -7,
+      "w": 5,
+      "h": 4,
+      "ending": true
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "x": -6,
+      "y": 3,
+      "w": 1,
+      "h": 1
+    },
+    {
+      "x": -6,
+      "y": -3,
+      "w": 1,
+      "h": 1
+    }
+  ],
+  "doors": [
+    {
+      "x": 0,
+      "y": 0,
+      "dir": {
+        "x": -1,
+        "y": 0
+      },
+      "type": 3
+    },
+    {
+      "x": -6,
+      "y": 3,
+      "dir": {
+        "x": 0,
+        "y": 1
+      },
+      "type": 1
+    },
+    {
+      "x": -6,
+      "y": -3,
+      "dir": {
+        "x": 0,
+        "y": -1
+      },
+      "type": 5
+    }
+  ],
+  "notes": [
+    {
+      "text": "A great wooden double door with a keyhole to the north.",
+      "ref": "1",
+      "pos": {
+        "x": -3.5,
+        "y": 0.5
+      }
+    },
+    {
+      "text": "A battered chest holds an iron key.",
+      "ref": "2",
+      "pos": {
+        "x": -5.5,
+        "y": 6
+      }
+    }
+  ],
+  "columns": [],
+  "water": [
+    {
+      "x": -9,
+      "y": -4
+    },
+    {
+      "x": -8,
+      "y": -4
+    },
+    {
+      "x": -8,
+      "y": -3
+    }
+  ]
+}

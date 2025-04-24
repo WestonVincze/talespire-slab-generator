@@ -3,10 +3,9 @@ import { convertDungeonDataToAssets } from "../convert";
 import { DungeonData } from "../types";
 import { encodeSlabToBinary } from "../encode";
 
-
 async function main() {
   try {
-    const dungeonData = await fs.readFile(`input/stormscar_basilica.json`, 'utf-8');
+    const dungeonData = await fs.readFile(`input/ragespear_chapel.json`, 'utf-8');
 
     const dungeonDataJSON: DungeonData = JSON.parse(dungeonData);
 
