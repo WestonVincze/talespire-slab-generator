@@ -31,7 +31,7 @@ export const assets = {
     }
   },
   wall_2x1: {
-
+    id: "bd1822ab-9e93-4fa6-9435-1793168de03f",
   },
   wall_corner: {
     id: "fdd3c8dc-9c94-4a63-a7d9-10ae36d07fe7",

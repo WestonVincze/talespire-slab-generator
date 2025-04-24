@@ -35,3 +35,30 @@ export interface DecodedSlab {
   assets: Assets;
   creatureCount: number; // always 0
 }
+
+type Vector2 = { x: number, y: number };
+type Vector3 = { x: number, y: number, z: number };
+
+export type Room = {
+  id: string,
+  type: string, // "entrance" | "rotund" | "corridor" | "basic";
+  offset: Vector3, // ideally the bottom left position
+  length: number,
+  width: number,
+  props?: [
+    {
+      id: string,
+      position: Vector3,
+      rotation: number
+    }
+  ],
+  doors?: [
+    {
+      type: string,
+      position: Vector2,
+      direction?: string
+    }
+  ]
+  neighbors?: string[],
+  connections?: Vector2[],
+}

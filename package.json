@@ -5,7 +5,8 @@
     "test": "npx jest",
     "encode": "tsx src/scripts/encode-cli.ts",
     "decode": "tsx src/scripts/decode-cli.ts",
-    "convert": "tsx src/scripts/convert-dungeon.ts"
+    "convert": "tsx src/scripts/convert-dungeon.ts",
+    "rooms": "tsx src/scripts/convert-room.ts"
   },
   "dependencies": {
     "zlib": "^1.0.5"
