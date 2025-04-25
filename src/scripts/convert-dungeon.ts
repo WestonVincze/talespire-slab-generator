@@ -1,16 +1,17 @@
 import { promises as fs } from "fs";
-import { convertDungeonDataToAssets } from "../convert";
+import { convertDungeonDataToRegions } from "../convert";
 import { DungeonData } from "../types";
 import { encodeSlabToBinary } from "../encode";
+import { generateSlab } from "../RegionService/generateSlab";
 
 async function main() {
   try {
-    const dungeonData = await fs.readFile(`input/ragespear_chapel.json`, 'utf-8');
+    const dungeonData = await fs.readFile(`input/deathcrown_library.json`, 'utf-8');
 
     const dungeonDataJSON: DungeonData = JSON.parse(dungeonData);
 
-    const slabData = convertDungeonDataToAssets(dungeonDataJSON);
-    // console.dir(JSON.stringify(slabData));
+    const regions = convertDungeonDataToRegions(dungeonDataJSON);
+    const slabData = generateSlab(regions);
     const slab = encodeSlabToBinary(slabData);
     console.log(slab);
   } catch (e) {

@@ -39,7 +39,7 @@ export interface DecodedSlab {
 type Vector2 = { x: number, y: number };
 type Vector3 = { x: number, y: number, z: number };
 
-export type Room = {
+export type Region = {
   id: string,
   type: string, // "entrance" | "rotund" | "corridor" | "basic";
   offset: Vector3, // ideally the bottom left position

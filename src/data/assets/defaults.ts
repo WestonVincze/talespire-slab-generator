@@ -3,7 +3,7 @@
  */
 
 
-export const assets = {
+export const default_assets = {
   floor: {
     id: "bdd9483a-3d7c-4f06-bfdd-145765045c0d",
     m_Center: {
