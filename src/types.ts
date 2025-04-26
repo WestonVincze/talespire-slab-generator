@@ -1,14 +1,28 @@
-export interface Vec2 {
-  x: number;
-  y: number;
+export type Vector2 = { x: number, y: number };
+export type Vector3 = { x: number, y: number, z: number };
+
+export type DungeonRect = {
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  ending?: boolean,
+  rotunda?: boolean
+}
+
+export type DungeonDoor = {
+  x: number,
+  y: number,
+  dir: Vector2,
+  type: number
 }
 
 export interface DungeonData {
-  rects: { x: number; y: number; w: number; h: number; ending?: boolean, rotunda?: boolean }[];
-  doors: { x: number; y: number; dir: Vec2; type: number }[];
+  rects: DungeonRect[];
+  doors: DungeonDoor[];
   notes?: any[];
-  columns?: Vec2[];
-  water?: Vec2[];
+  columns?: Vector2[];
+  water?: Vector2[];
 }
 
 export interface Layout {
@@ -36,12 +50,10 @@ export interface DecodedSlab {
   creatureCount: number; // always 0
 }
 
-type Vector2 = { x: number, y: number };
-type Vector3 = { x: number, y: number, z: number };
 
 export type Region = {
   id: string,
-  type: string, // "entrance" | "rotund" | "corridor" | "basic";
+  type: string, // "entrance" | "rotund" | "door" | "basic";
   offset: Vector3, // ideally the bottom left position
   length: number,
   width: number,
@@ -52,13 +64,12 @@ export type Region = {
       rotation: number
     }
   ],
-  doors?: [
-    {
-      type: string,
-      position: Vector2,
-      direction?: string
-    }
-  ]
+  door?: {
+    type: string,
+    // position: Vector2,
+    direction?: string
+    // neighbors?
+  },
   neighbors?: string[],
   connections?: Vector2[],
 }

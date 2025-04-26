@@ -1,7 +1,7 @@
 import { DecodedSlab } from "../types";
 import { encodeSlabToBinary } from "../encode";
 import { test_rooms } from "../data/rooms/testRoom";
-import { assets } from "../data/assets/defaults";
+import { default_assets } from "../data/assets/defaults";
 
 // experimenting...
 async function main() {
@@ -16,10 +16,10 @@ async function main() {
     let wall_2x1_count = 0;
     let wall_corner_2x2_count = 0;
     let stairs_count = 0;
-    slab.assets[assets.floor.id] = [];
-    slab.assets[assets.wall_2x1.id] = [];
-    slab.assets[assets.wall_corner_2x2.id] = [];
-    slab.assets[assets.stairs.id] = [];
+    slab.assets[default_assets.floor.id] = [];
+    slab.assets[default_assets.wall_2x1.id] = [];
+    slab.assets[default_assets.wall_corner_2x2.id] = [];
+    slab.assets[default_assets.stairs.id] = [];
 
     for (const room of test_rooms) {
       for (let dx = 0; dx < room.width; dx++) {
@@ -28,7 +28,7 @@ async function main() {
           const scaledZ = (room.offset.z + dy) * 200;
           const scaledY = 0;
 
-          slab.assets[assets.floor.id].push({
+          slab.assets[default_assets.floor.id].push({
             scaledX,
             scaledY,
             scaledZ,
@@ -40,7 +40,7 @@ async function main() {
     }
 
     slab.layouts.push({
-      assetKindId: assets.floor.id,
+      assetKindId: default_assets.floor.id,
       assetCount: floor_count
     })
 

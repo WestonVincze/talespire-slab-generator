@@ -1,5 +1,5 @@
 import { default_assets } from "../data/assets/defaults";
-import type { Assets, Layout, Region } from "../types";
+import type { Assets, DecodedSlab, Layout, Region } from "../types";
 
 const rotations = {
   "top-left": 0,
@@ -8,7 +8,12 @@ const rotations = {
   "bottom-right": 0,
 }
 
-export function generateSlab(regions: Region[]) {
+/**
+ * Generates slab data using provided regions
+ * @param regions an array of Regions
+ * @returns a decoded slab, ready to be encoded for TaleSpire
+ */
+export function generateSlab(regions: Region[]): DecodedSlab {
   const assets: Assets = {
     [default_assets.floor.id]: [],
     [default_assets.wall_2x1.id]: [],
@@ -17,6 +22,52 @@ export function generateSlab(regions: Region[]) {
   };
 
   for (const region of regions) {
+    if (region.type === "connection") {
+      const scaledX = region.offset.x * 200;
+      const scaledZ = region.offset.z * 200;
+      const scaledY = 0;
+
+      assets[default_assets.floor.id].push({
+        scaledX,
+        scaledY,
+        scaledZ,
+        rotation: 0,
+      });
+
+      switch (region.door?.direction) {
+        case "left":
+        case "right":
+          assets[default_assets.wall_2x1.id].push({
+            scaledX,
+            scaledY,
+            scaledZ,
+            rotation: 0,
+          });
+          assets[default_assets.wall_2x1.id].push({
+            scaledX,
+            scaledY,
+            scaledZ: scaledZ + region.length * 200,
+            rotation: 0,
+          });
+          break;
+        case "top":
+        case "bottom":
+          assets[default_assets.wall_2x1.id].push({
+            scaledX,
+            scaledY,
+            scaledZ,
+            rotation: 90,
+          });
+          assets[default_assets.wall_2x1.id].push({
+            scaledX: scaledX + region.width * 200,
+            scaledY,
+            scaledZ,
+            rotation: 90,
+          });
+          break;
+      }
+    }
+
     for (let dx = 0; dx < region.width; dx++) {
       for (let dy = 0; dy < region.length; dy++) {
         // for each position, we add the x and z offsets to ensure non-zero values
@@ -32,7 +83,6 @@ export function generateSlab(regions: Region[]) {
           rotation: 0,
         });
 
-        // add walls
         if (region.type === "entrance") {
           // entrance
           assets[default_assets.stairs.id].push({
@@ -50,22 +100,6 @@ export function generateSlab(regions: Region[]) {
         } else if (region.width === 1 && region.length === 1) {
 
         } else if (dx === 0 && dy === 0) {
-          // top left tile 
-          assets[default_assets.wall_corner_2x2.id].push({
-            scaledX,
-            scaledY: 25,
-            scaledZ,
-            rotation: 90,
-          });
-        } else if (dx === region.width - 1 && dy === 0) {
-          // top right tile
-          assets[default_assets.wall_corner_2x2.id].push({
-            scaledX,
-            scaledY: 25,
-            scaledZ,
-            rotation: 180,
-          });
-        } else if (dx === 0 && dy === region.length - 1) {
           // bottom left tile 
           assets[default_assets.wall_corner_2x2.id].push({
             scaledX,
@@ -73,15 +107,31 @@ export function generateSlab(regions: Region[]) {
             scaledZ,
             rotation: 0,
           });
-        } else if (dx === region.width - 1 && dy === region.length - 1) {
-          // bottom right tile 
+        } else if (dx === region.width - 1 && dy === 0) {
+          // bottom right tile
           assets[default_assets.wall_corner_2x2.id].push({
             scaledX,
             scaledY: 25,
             scaledZ,
             rotation: 270,
           });
-        } else if (dy === 0) {
+        } else if (dx === 0 && dy === region.length - 1) {
+          // top left tile 
+          assets[default_assets.wall_corner_2x2.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ,
+            rotation: 90,
+          });
+        } else if (dx === region.width - 1 && dy === region.length - 1) {
+          // top right tile 
+          assets[default_assets.wall_corner_2x2.id].push({
+            scaledX,
+            scaledY: 25,
+            scaledZ,
+            rotation: 180,
+          });
+        } else if (dy === region.length - 1) {
           // top tile
           assets[default_assets.wall_2x1.id].push({
             scaledX,
@@ -89,7 +139,7 @@ export function generateSlab(regions: Region[]) {
             scaledZ: scaledZ + 150,
             rotation: 0
           })
-        } else if (dy === region.length - 1) {
+        } else if (dy === 0) {
           // bottom tile
           assets[default_assets.wall_2x1.id].push({
             scaledX,

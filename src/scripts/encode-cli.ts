@@ -1,4 +1,4 @@
-import { assets } from "../data/assets/defaults";
+import { default_assets } from "../data/assets/defaults";
 import { encodeSlabToBinary } from "../encode";
 import { DecodedSlab } from "../types";
 
@@ -60,16 +60,16 @@ const small_tile_test: DecodedSlab = {
 const room_with_walls_4x2: DecodedSlab = {
   layouts: [
     {
-      assetKindId: assets.floor.id,
+      assetKindId: default_assets.floor.id,
       assetCount: 2,
     },
     {
-      assetKindId: assets.wall.id,
+      assetKindId: default_assets.wall_2x1.id,
       assetCount: 8,
     },
   ],
   assets: {
-    [assets.floor.id]: [
+    [default_assets.floor.id]: [
       {
         scaledX: 0, scaledY: 12.5, scaledZ: 100, rotation: 0
       },
@@ -97,7 +97,7 @@ const room_with_walls_4x2: DecodedSlab = {
       },
       */
     ],
-    [assets.wall.id]: [
+    [default_assets.wall_2x1.id]: [
       {
         scaledX: 0, scaledY: 0, scaledZ: 0, rotation: 0
       },
