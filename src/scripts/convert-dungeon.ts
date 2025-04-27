@@ -6,7 +6,7 @@ import { generateSlab } from "../RegionService/generateSlab";
 
 async function main() {
   try {
-    const dungeonData = await fs.readFile(`input/deathcrown_library.json`, 'utf-8');
+    const dungeonData = await fs.readFile(`input/forsaken_mausoleum_of_terror.json`, 'utf-8');
 
     const dungeonDataJSON: DungeonData = JSON.parse(dungeonData);
 
